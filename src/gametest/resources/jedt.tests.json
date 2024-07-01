@@ -1,6 +1,6 @@
 {
   "_runtime": ["#tests"],
   "tests": [
-    "net.shadew.debug.tests.DebugTests"
+    "dev.runefox.jedt.tests.DebugTests"
   ]
 }

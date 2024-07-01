@@ -71,10 +71,10 @@ public abstract class VerticallyStackedScreen extends DebugMenuOverlayScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
-        if (suggestionsLayer.isMouseOver(mx, my) && suggestionsLayer.mouseScrolled(mx, my, delta))
+    public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+        if (suggestionsLayer.isMouseOver(mx, my) && suggestionsLayer.mouseScrolled(mx, my, scrollX, scrollY))
             return true;
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, scrollX, scrollY);
     }
 
     @Override
@@ -93,7 +93,7 @@ public abstract class VerticallyStackedScreen extends DebugMenuOverlayScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float tickProgress) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseX, tickProgress);
         super.render(graphics, mouseX, mouseY, tickProgress);
 
         graphics.drawCenteredString(font, getTitle(), width / 2, 20, 0xFFFFFFFF);

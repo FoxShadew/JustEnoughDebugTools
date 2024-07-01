@@ -8,6 +8,7 @@ import com.google.gson.JsonPrimitive;
 import dev.runefox.jedt.api.status.DebugStatusKey;
 import dev.runefox.jedt.api.status.ServerDebugStatus;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
-public class ServerDebugStatusImpl implements ServerDebugStatus.Mutable {
+public class ServerDebugStatusImpl implements ServerDebugStatus.Mutable, CustomPacketPayload {
     private boolean available;
     private final ImmutableSet<DebugStatusKey<?>> keys;
     private final ImmutableMap<String, DebugStatusKey<?>> keysByName;
@@ -213,6 +214,11 @@ public class ServerDebugStatusImpl implements ServerDebugStatus.Mutable {
 
     private <T> String getLoggableValue(DebugStatusKey<T> key) {
         return key.getLoggableValue(getStatus(key));
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return null;
     }
 
     public static class Builder implements ServerDebugStatus.Builder {

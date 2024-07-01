@@ -176,15 +176,15 @@ public class DefaultMenuInitializer implements MenuInitializer {
     }
 
     private static Component text(String optionId) {
-        return Component.translatable(Util.makeDescriptionId("debug.options", new ResourceLocation("jedt", optionId)));
+        return Component.translatable(Util.makeDescriptionId("debug.options", ResourceLocation.fromNamespaceAndPath("jedt", optionId)));
     }
 
     private static Component desc(String optionId) {
-        return Component.translatable(Util.makeDescriptionId("debug.options", new ResourceLocation("jedt", optionId)) + ".desc");
+        return Component.translatable(Util.makeDescriptionId("debug.options", ResourceLocation.fromNamespaceAndPath("jedt", optionId)) + ".desc");
     }
 
     private static Component longn(String optionId) {
-        return Component.translatable(Util.makeDescriptionId("debug.options", new ResourceLocation("jedt", optionId)) + ".long");
+        return Component.translatable(Util.makeDescriptionId("debug.options", ResourceLocation.fromNamespaceAndPath("jedt", optionId)) + ".long");
     }
 
     private void reloadChunks(OptionSelectContext context) {

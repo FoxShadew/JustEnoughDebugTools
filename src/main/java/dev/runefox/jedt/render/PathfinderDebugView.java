@@ -120,7 +120,7 @@ public class PathfinderDebugView implements DebugView {
         }
 
         if (renderOpenClosedSet) {
-            for (Node node : path.getClosedSet()) {
+            for (Node node : path.debugData().closedSet()) {
                 if (distanceToCamera(node.asBlockPos(), camX, camY, camZ) <= MAX_RENDER_DIST) {
                     DebugRenderer.renderFilledBox(
                         pose, buffSrc,
@@ -149,7 +149,7 @@ public class PathfinderDebugView implements DebugView {
                 }
             }
 
-            for (Node node : path.getOpenSet()) {
+            for (Node node : path.debugData().openSet()) {
                 if (distanceToCamera(node.asBlockPos(), camX, camY, camZ) <= MAX_RENDER_DIST) {
                     DebugRenderer.renderFilledBox(
                         pose, buffSrc,
@@ -203,11 +203,10 @@ public class PathfinderDebugView implements DebugView {
 
     public static void renderPathLine(Path path, double camX, double camY, double camZ) {
         RenderSystem.disableCull();
-        Tesselator tess = Tesselator.getInstance();
-        BufferBuilder buff = tess.getBuilder();
-
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        buff.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        Tesselator tess = Tesselator.getInstance();
+        BufferBuilder buff = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         Node lastNode = null;
         for (int i = 0; i < path.getNodeCount(); ++i) {
@@ -236,20 +235,20 @@ public class PathfinderDebugView implements DebugView {
                     nx = -dz / dl,
                     nz = dx / dl;
 
-                buff.vertex(n1x - LINE_WIDTH * nx, n1y, n1z - LINE_WIDTH * nz).color(red, green, blue, 255).endVertex();
-                buff.vertex(n1x + LINE_WIDTH * nx, n1y, n1z + LINE_WIDTH * nz).color(red, green, blue, 255).endVertex();
-                buff.vertex(n2x + LINE_WIDTH * nx, n2y, n2z + LINE_WIDTH * nz).color(red, green, blue, 255).endVertex();
-                buff.vertex(n2x - LINE_WIDTH * nx, n2y, n2z - LINE_WIDTH * nz).color(red, green, blue, 255).endVertex();
+                buff.addVertex(n1x - LINE_WIDTH * nx, n1y, n1z - LINE_WIDTH * nz).setColor(red, green, blue, 255);
+                buff.addVertex(n1x + LINE_WIDTH * nx, n1y, n1z + LINE_WIDTH * nz).setColor(red, green, blue, 255);
+                buff.addVertex(n2x + LINE_WIDTH * nx, n2y, n2z + LINE_WIDTH * nz).setColor(red, green, blue, 255);
+                buff.addVertex(n2x - LINE_WIDTH * nx, n2y, n2z - LINE_WIDTH * nz).setColor(red, green, blue, 255);
 
-                buff.vertex(n1x, n1y - LINE_WIDTH, n1z).color(red, green, blue, 255).endVertex();
-                buff.vertex(n1x, n1y + LINE_WIDTH, n1z).color(red, green, blue, 255).endVertex();
-                buff.vertex(n2x, n2y + LINE_WIDTH, n2z).color(red, green, blue, 255).endVertex();
-                buff.vertex(n2x, n2y - LINE_WIDTH, n2z).color(red, green, blue, 255).endVertex();
+                buff.addVertex(n1x, n1y - LINE_WIDTH, n1z).setColor(red, green, blue, 255);
+                buff.addVertex(n1x, n1y + LINE_WIDTH, n1z).setColor(red, green, blue, 255);
+                buff.addVertex(n2x, n2y + LINE_WIDTH, n2z).setColor(red, green, blue, 255);
+                buff.addVertex(n2x, n2y - LINE_WIDTH, n2z).setColor(red, green, blue, 255);
             }
             lastNode = node;
         }
 
-        tess.end();
+        BufferUploader.drawWithShader(buff.buildOrThrow());
         RenderSystem.enableCull();
     }
 

@@ -33,7 +33,7 @@ public class TestFunctionNameArgument implements ArgumentType<String> {
 
    @Override
    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> ctx, SuggestionsBuilder builder) {
-      Stream<String> fns = GameTestRegistry.getAllTestFunctions().stream().map(TestFunction::getTestName);
+       Stream<String> fns = GameTestRegistry.getAllTestFunctions().stream().map(TestFunction::testName);
       return SharedSuggestionProvider.suggest(fns, builder);
    }
 

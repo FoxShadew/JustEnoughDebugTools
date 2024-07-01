@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.fabricmc.loader.impl.entrypoint.EntrypointUtils;
 import net.fabricmc.loader.impl.util.ExceptionUtil;
 import net.minecraft.gametest.framework.GameTestRegistry;
 import net.minecraft.gametest.framework.StructureUtils;
@@ -82,7 +81,9 @@ public class Debug implements ModInitializer {
         if (serverDebugStatusBuilder == null) {
             serverDebugStatusBuilder = new ServerDebugStatusImpl.Builder();
             new DefaultStatusInitializer().onInitializeDebugStatus(serverDebugStatusBuilder);
-            EntrypointUtils.invoke(
+
+
+            FabricLoader.getInstance().invokeEntrypoints(
                 "jedt:status", DebugStatusInitializer.class,
                 init -> init.onInitializeDebugStatus(serverDebugStatusBuilder)
             );

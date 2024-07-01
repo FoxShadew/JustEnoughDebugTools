@@ -3,6 +3,7 @@ package dev.runefox.jedt.util;
 import dev.runefox.jedt.impl.status.ServerDebugStatusImpl;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -12,18 +13,21 @@ import net.minecraft.world.level.GameRules;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class DebugNetwork implements ModInitializer {
-    public static final ResourceLocation GAME_RULES_PACKET_ID = new ResourceLocation("jedt:game_rules");
-    public static final ResourceLocation SERVER_STATUS_PACKET_ID = new ResourceLocation("jedt:server_status");
+    public static final ResourceLocation GAME_RULES_PACKET_ID = ResourceLocation.parse("jedt:game_rules");
+    public static final ResourceLocation SERVER_STATUS_PACKET_ID = ResourceLocation.parse("jedt:server_status");
 
     @Override
     public void onInitialize() {
-
+        PayloadTypeRegistry.playS2C().register(
+            DebugPayload.TYPE,
+            DebugPayload.CODEC
+        );
     }
 
     public static void sendServerStatus(ServerDebugStatusImpl status, ServerPlayer entity) {
         FriendlyByteBuf buf = PacketByteBufs.create();
         status.serialize(buf);
-        ServerPlayNetworking.send(entity, SERVER_STATUS_PACKET_ID, buf);
+        ServerPlayNetworking.send(entity, new DebugPayload(SERVER_STATUS_PACKET_ID, buf));
     }
 
     public static void sendServerStatus(ServerDebugStatusImpl status, MinecraftServer server) {
@@ -31,7 +35,7 @@ public class DebugNetwork implements ModInitializer {
         status.serialize(buf);
         server.getPlayerList()
               .getPlayers()
-              .forEach(player -> ServerPlayNetworking.send(player, SERVER_STATUS_PACKET_ID, buf));
+              .forEach(player -> ServerPlayNetworking.send(player, new DebugPayload(SERVER_STATUS_PACKET_ID, buf)));
     }
 
     private static FriendlyByteBuf serializeGameRules(MinecraftServer server) {
@@ -69,11 +73,11 @@ public class DebugNetwork implements ModInitializer {
         FriendlyByteBuf buf = serializeGameRules(server);
         server.getPlayerList()
               .getPlayers()
-              .forEach(player -> ServerPlayNetworking.send(player, GAME_RULES_PACKET_ID, buf));
+              .forEach(player -> ServerPlayNetworking.send(player, new DebugPayload(GAME_RULES_PACKET_ID, buf)));
     }
 
     public static void sendGameRules(ServerPlayer player) {
         FriendlyByteBuf buf = serializeGameRules(player.server);
-        ServerPlayNetworking.send(player, GAME_RULES_PACKET_ID, buf);
+        ServerPlayNetworking.send(player, new DebugPayload(GAME_RULES_PACKET_ID, buf));
     }
 }

@@ -22,7 +22,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public class ConfigMenu implements GuiEventListener {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("jedt:textures/gui/options.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.parse("jedt:textures/gui/options.png");
     public static final int MENU_WIDTH = 128;
     public static final int ITEM_HEIGHT = 20;
     private static final int TOP_PADDING = ITEM_HEIGHT / 2 - 4;
@@ -32,7 +32,8 @@ public class ConfigMenu implements GuiEventListener {
     private static final int HOVERING_SCROLL_BAR_WIDTH = 4;
 
     private final Component title;
-    private Runnable closeHandler;
+    private Runnable closeHandler = () -> { };
+    private Runnable hoverChangeHandler = () -> { };
 
     private final List<Entry> entries = new ArrayList<>();
     private final Font textRenderer = Minecraft.getInstance().font;
@@ -48,14 +49,16 @@ public class ConfigMenu implements GuiEventListener {
 
     private double scroll;
 
-    @Deprecated
-    public ConfigMenu(Component title, Runnable closeHandler) {
-        this.title = title;
-        this.closeHandler = closeHandler;
-    }
-
     public ConfigMenu(Component title) {
         this.title = title;
+    }
+
+    public int size() {
+        return entries.size();
+    }
+
+    public Entry entry(int index) {
+        return entries.get(index);
     }
 
     public void setCloseHandler(Runnable closeHandler) {
@@ -238,6 +241,7 @@ public class ConfigMenu implements GuiEventListener {
             }
         }
 
+        // Close button
         int x1 = left + MENU_WIDTH - ITEM_HEIGHT;
         int y1 = 0;
         int x2 = left + MENU_WIDTH;
@@ -255,14 +259,14 @@ public class ConfigMenu implements GuiEventListener {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
         if (mouseX >= left && mouseX <= left + MENU_WIDTH) {
             int itemsHeight = entries.size() * ITEM_HEIGHT;
             int viewHeight = height - ITEM_HEIGHT;
             int overflow = itemsHeight - viewHeight;
             if (overflow > 0) {
                 double offset = overflow * scroll;
-                offset -= amount * ITEM_HEIGHT / 2;
+                offset -= amountY * ITEM_HEIGHT / 2;
                 scroll = offset / overflow;
             }
         }
@@ -287,10 +291,37 @@ public class ConfigMenu implements GuiEventListener {
         return false;
     }
 
-    public boolean render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, DescriptionBox box) {
+    public int hoveredIndex(int mouseX, int mouseY) {
+        if (!canInteract())
+            return -1;
+
+        int itemsHeight = entries.size() * ITEM_HEIGHT;
+        int viewHeight = height - ITEM_HEIGHT;
+        int overflow = itemsHeight - viewHeight;
+        int offset = overflow <= 0 ? 0 : (int) (overflow * scroll);
+
+        if (mouseY >= ITEM_HEIGHT) {
+            int y = ITEM_HEIGHT - offset;
+            for (int i = 0; i < entries.size(); i++) {
+                int x1 = left;
+                int y1 = y;
+                int x2 = left + MENU_WIDTH;
+                int y2 = y + ITEM_HEIGHT;
+
+                if (mouseX >= x1 && mouseX <= x2 && mouseY >= y1 && mouseY <= y2) {
+                    return i;
+                }
+                y += ITEM_HEIGHT;
+            }
+        }
+
+        return -1;
+    }
+
+    public boolean render(GuiGraphics graphics, int mouseX, int mouseY, int lightUpIndex, float partialTicks, DescriptionBox box) {
         boolean hasDescriptionBox = false;
         if (swapManager != null) {
-            swapManager.render(graphics, mouseX, mouseY, partialTicks, box);
+            swapManager.render(graphics, mouseX, mouseY, lightUpIndex, partialTicks, box);
             return hasDescriptionBox;
         }
 
@@ -341,8 +372,10 @@ public class ConfigMenu implements GuiEventListener {
 
         boolean hoveringScrollbar = false;
 
+
         if ((alphaFactor & 0xFC000000) != 0) {
             int y = ITEM_HEIGHT - offset;
+            int index = 0;
             for (Entry entry : entries) {
                 int x1 = left;
                 int y1 = y;
@@ -360,7 +393,7 @@ public class ConfigMenu implements GuiEventListener {
                     int uOffset = ITEM_HEIGHT - visibleHeight;
                     int topY = bottomY - visibleHeight;
 
-                    if (interactive && !hoveringScrollbar && mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2) {
+                    if (interactive && !hoveringScrollbar && index == lightUpIndex) {
                         box.updateHovered(entry.option, x1, y1, x2 - x1, y2 - y1, DebugConfigScreen.INSTANCE.width, DebugConfigScreen.INSTANCE.height);
                         hasDescriptionBox = true;
                         graphics.blit(TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (3 + entry.type() * 2) + uOffset, width, visibleHeight);
@@ -380,6 +413,7 @@ public class ConfigMenu implements GuiEventListener {
                 }
 
                 y += ITEM_HEIGHT;
+                index++;
             }
 
             if (scrollbar) {

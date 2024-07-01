@@ -148,14 +148,14 @@ public class RuntimeTestConfig {
 
     private static TestReporter reporter(JsonElement config, File serverDir) throws Exception {
         if (config.isJsonPrimitive()) {
-            return TestReporterType.instantiate(new ResourceLocation(config.getAsString()), null, serverDir);
+            return TestReporterType.instantiate(ResourceLocation.parse(config.getAsString()), null, serverDir);
         } else {
             JsonObject obj = config.getAsJsonObject();
             if (obj.size() != 1) {
                 throw new Exception("Failed to configure reporter from object with incorrect size");
             }
             Map.Entry<String, JsonElement> entry = obj.entrySet().iterator().next();
-            return TestReporterType.instantiate(new ResourceLocation(entry.getKey()), entry.getValue(), serverDir);
+            return TestReporterType.instantiate(ResourceLocation.parse(entry.getKey()), entry.getValue(), serverDir);
         }
     }
 

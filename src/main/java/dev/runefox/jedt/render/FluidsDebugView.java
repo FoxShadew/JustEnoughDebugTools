@@ -42,8 +42,9 @@ public record FluidsDebugView(Minecraft client) implements DebugView {
         pose.pushPose();
         pose.translate(-cameraX, -cameraY, -cameraZ);
 
-        Matrix4f matrix = pose.last().pose();
-        Matrix3f nmatrix = pose.last().normal();
+        PoseStack.Pose lastPose = pose.last();
+        Matrix4f matrix = lastPose.pose();
+        Matrix3f nmatrix = lastPose.normal();
         for (BlockPos pos : BlockPos.betweenClosed(playerPos.offset(-8, -8, -8), playerPos.offset(8, 8, 8))) {
             FluidState fluid = world.getFluidState(pos);
             if (fluid.getAmount() <= 0) {
@@ -68,8 +69,8 @@ public record FluidsDebugView(Minecraft client) implements DebugView {
             float z2 = z1 + (float) flow.z * 0.8f;
 
             try { // TODO
-                buff.vertex(matrix, x1, y1, z1).color(0f, 0f, 1f, 1f).normal(nmatrix, 0, 1, 0).endVertex();
-                buff.vertex(matrix, x2, y2, z2).color(0f, 0f, 1f, 1f).normal(nmatrix, 0, 1, 0).endVertex();
+                buff.addVertex(matrix, x1, y1, z1).setColor(0f, 0f, 1f, 1f).setNormal(lastPose, 0, 1, 0);
+                buff.addVertex(matrix, x2, y2, z2).setColor(0f, 0f, 1f, 1f).setNormal(lastPose, 0, 1, 0);
             } catch (IllegalStateException ignored) {
             }
         }

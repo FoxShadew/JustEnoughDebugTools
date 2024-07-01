@@ -17,9 +17,11 @@ import com.mojang.serialization.Lifecycle;
 import dev.runefox.jedt.api.gametest.GameTestCIUtil;
 import dev.runefox.jedt.api.gametest.GameTestEvents;
 import net.minecraft.CrashReport;
+import net.minecraft.ReportType;
 import net.minecraft.SystemReport;
 import net.minecraft.Util;
 import net.minecraft.commands.Commands.CommandSelection;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -35,9 +37,12 @@ import net.minecraft.server.level.progress.LoggerChunkProgressListener;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.debugchart.LocalSampleLogger;
+import net.minecraft.util.debugchart.SampleLogger;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.WorldOptions;
@@ -87,7 +92,7 @@ public class DebugGameTestServer extends MinecraftServer {
         WorldDataConfiguration.DEFAULT  // Data packs
     );
 
-    private final List<GameTestBatch> testBatches;
+    private List<GameTestBatch> testBatches;
     private final RuntimeTestConfig config;
     private final File serverDir;
 
@@ -98,69 +103,63 @@ public class DebugGameTestServer extends MinecraftServer {
 
     public static DebugGameTestServer create(Thread thread, File serverDir, LevelStorageSource.LevelStorageAccess lsa, PackRepository datapacks, RuntimeTestConfig config) {
 
-        Collection<GameTestBatch> tests = groupTestsIntoBatches(config.filteredTests(), config.maxSimultaneous());
+        datapacks.reload();
 
-        if (tests.isEmpty()) {
-            throw new IllegalArgumentException("No test batches were given!");
-        } else {
-            datapacks.reload();
+        WorldDataConfiguration worldConfig = new WorldDataConfiguration(
+            new DataPackConfig(
+                new ArrayList<>(datapacks.getAvailableIds()), java.util.List.of()
+            ),
+            FeatureFlags.REGISTRY.allFlags()
+        );
 
-            WorldDataConfiguration worldConfig = new WorldDataConfiguration(
-                new DataPackConfig(
-                    new ArrayList<>(datapacks.getAvailableIds()), List.of()
-                ),
-                FeatureFlags.REGISTRY.allFlags()
-            );
+        WorldLoader.PackConfig packConfig = new WorldLoader.PackConfig(datapacks, worldConfig, false, true);
+        WorldLoader.InitConfig initConfig = new WorldLoader.InitConfig(packConfig, CommandSelection.DEDICATED, 4);
 
-            WorldLoader.PackConfig packConfig = new WorldLoader.PackConfig(datapacks, worldConfig, false, true);
-            WorldLoader.InitConfig initConfig = new WorldLoader.InitConfig(packConfig, CommandSelection.DEDICATED, 4);
+        try {
+            LOGGER.debug("Starting resource loading");
 
-            try {
-                LOGGER.debug("Starting resource loading");
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            WorldStem worldStem = Util.blockUntilDone(
+                executor -> WorldLoader.load(
+                    initConfig,
+                    ctx -> {
+                        Registry<LevelStem> levelStems = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
 
-                Stopwatch stopwatch = Stopwatch.createStarted();
-                WorldStem worldStem = Util.blockUntilDone(
-                    executor -> WorldLoader.load(
-                        initConfig,
-                        ctx -> {
-                            Registry<LevelStem> levelStems = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable()).freeze();
+                        // Create a superflat world
+                        WorldDimensions.Complete dimensions = ctx.datapackWorldgen()
+                                                                 .registryOrThrow(Registries.WORLD_PRESET)
+                                                                 .getHolderOrThrow(WorldPresets.FLAT)
+                                                                 .value()
+                                                                 .createWorldDimensions()
+                                                                 .bake(levelStems);
 
-                            // Create a superflat world
-                            WorldDimensions.Complete dimensions = ctx.datapackWorldgen()
-                                                                     .registryOrThrow(Registries.WORLD_PRESET)
-                                                                     .getHolderOrThrow(WorldPresets.FLAT)
-                                                                     .value()
-                                                                     .createWorldDimensions()
-                                                                     .bake(levelStems);
+                        return new WorldLoader.DataLoadOutput<>(
+                            new PrimaryLevelData(
+                                TEST_SETTINGS, TEST_OPTIONS,
+                                dimensions.specialWorldProperty(),
+                                dimensions.lifecycle()
+                            ),
+                            dimensions.dimensionsRegistryAccess()
+                        );
+                    },
+                    WorldStem::new,
+                    Util.backgroundExecutor(),
+                    executor
+                )
+            ).get();
+            stopwatch.stop();
 
-                            return new WorldLoader.DataLoadOutput<>(
-                                new PrimaryLevelData(
-                                    TEST_SETTINGS, TEST_OPTIONS,
-                                    dimensions.specialWorldProperty(),
-                                    dimensions.lifecycle()
-                                ),
-                                dimensions.dimensionsRegistryAccess()
-                            );
-                        },
-                        WorldStem::new,
-                        Util.backgroundExecutor(),
-                        executor
-                    )
-                ).get();
-                stopwatch.stop();
-
-                LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-                return new DebugGameTestServer(thread, serverDir, lsa, datapacks, worldStem, tests, config);
-            } catch (Exception var11) {
-                LOGGER.warn("Failed to load vanilla datapack, bit oops", var11);
-                System.exit(-1);
-                throw new IllegalStateException();
-            }
+            LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            return new DebugGameTestServer(thread, serverDir, lsa, datapacks, worldStem, config);
+        } catch (Exception var11) {
+            LOGGER.warn("Failed to load vanilla datapack, bit oops", var11);
+            System.exit(-1);
+            throw new IllegalStateException();
         }
     }
 
-    private static Collection<GameTestBatch> groupTestsIntoBatches(Stream<TestFunction> tests, int partitionSize) {
-        Map<String, List<TestFunction>> byBatchName = tests.collect(Collectors.groupingBy(TestFunction::getBatchName));
+    private static Collection<GameTestBatch> groupTestsIntoBatches(ServerLevel level, Stream<TestFunction> tests, int partitionSize) {
+        Map<String, List<TestFunction>> byBatchName = tests.collect(Collectors.groupingBy(TestFunction::batchName));
 
         return byBatchName.entrySet().stream().flatMap(entry -> {
             String string = entry.getKey();
@@ -173,16 +172,20 @@ public class DebugGameTestServer extends MinecraftServer {
             return Streams.stream(Iterables.partition(batchTests, partitionSize))
                           .map(partition -> new GameTestBatch(
                               string + ":" + batchNr.incrementAndGet(),
-                              ImmutableList.copyOf(partition),
+                              partition.stream().map(func -> new GameTestInfo(
+                                  func,
+                                  Rotation.NONE,
+                                  level,
+                                  RetryOptions.noRetries()
+                              )).toList(),
                               before, after
                           ));
         }).collect(ImmutableList.toImmutableList());
     }
 
 
-    private DebugGameTestServer(Thread thread, File serverDir, LevelStorageSource.LevelStorageAccess lsa, PackRepository datapacks, WorldStem stem, Collection<GameTestBatch> collection, RuntimeTestConfig config) {
-        super(thread, lsa, datapacks, stem, Proxy.NO_PROXY, DataFixers.getDataFixer(), TEST_SERVICES, LoggerChunkProgressListener::new);
-        this.testBatches = Lists.newArrayList(collection);
+    private DebugGameTestServer(Thread thread, File serverDir, LevelStorageSource.LevelStorageAccess lsa, PackRepository datapacks, WorldStem stem, RuntimeTestConfig config) {
+        super(thread, lsa, datapacks, stem, Proxy.NO_PROXY, DataFixers.getDataFixer(), TEST_SERVICES, LoggerChunkProgressListener::createFromGameruleRadius);
         this.config = config;
         this.serverDir = serverDir;
     }
@@ -197,10 +200,16 @@ public class DebugGameTestServer extends MinecraftServer {
         loadLevel();
 
         String levelName = config.dimension();
-        testLevel = getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(levelName)));
+        testLevel = getLevel(ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(levelName)));
         if (testLevel == null) {
             throw new RuntimeException("There is no such dimension named '" + levelName + "'");
         }
+
+        Collection<GameTestBatch> tests = groupTestsIntoBatches(testLevel, config.filteredTests(), config.maxSimultaneous());
+        if (tests.isEmpty()) {
+            throw new RuntimeException("No test batches were given!");
+        }
+        this.testBatches = Lists.newArrayList(tests);
 
         testLevel.setDefaultSpawnPos(config.start(), 0);
         testLevel.setWeatherParameters(20000000, 20000000, false, false);
@@ -227,7 +236,7 @@ public class DebugGameTestServer extends MinecraftServer {
 
             GlobalTestReporter.finish();
 
-            LOGGER.info("========= {} GAME TESTS COMPLETE ======================", this.testTracker.getTotalCount());
+            LOGGER.info("========= {} GAME TESTS COMPLETE IN {} ======================", this.testTracker.getTotalCount(), this.stopwatch.stop());
             if (testTracker.hasFailedRequired()) {
                 LOGGER.info("{} required tests failed :(", testTracker.getFailedRequiredCount());
 
@@ -249,6 +258,18 @@ public class DebugGameTestServer extends MinecraftServer {
             LOGGER.info("====================================================");
         }
 
+    }
+
+    private final LocalSampleLogger sampleLogger = new LocalSampleLogger(4);
+
+    @Override
+    protected SampleLogger getTickTimeLogger() {
+        return sampleLogger;
+    }
+
+    @Override
+    public boolean isTickTimeLoggingEnabled() {
+        return false;
     }
 
     @Override
@@ -288,22 +309,25 @@ public class DebugGameTestServer extends MinecraftServer {
             GameTestCIUtil.exportTestWorldAsZip(this, path.toFile());
         });
 
-        LOGGER.error("JEDT game test server crashed\n{}", report.getFriendlyReport());
+        LOGGER.error("JEDT game test server crashed\n{}", report.getFriendlyReport(ReportType.TEST));
         System.exit(1);
     }
 
+    private final Stopwatch stopwatch = Stopwatch.createUnstarted();
     private void startTests(ServerLevel level) {
-        Collection<GameTestInfo> tests = GameTestRunner.runTestBatches(
-            testBatches,
-            config.start(),
-            config.testRotation(),
-            level,
-            GameTestTicker.SINGLETON,
-            config.testsPerRow()
+        BlockPos blockPos = new BlockPos(
+            level.random.nextIntBetweenInclusive(-14999992, 14999992), -59, level.random.nextIntBetweenInclusive(-14999992, 14999992)
         );
+        GameTestRunner runner = GameTestRunner.Builder.fromBatches(testBatches, level)
+                                                      .newStructureSpawner(new StructureGridSpawner(blockPos, 8, false))
+                                                      .build();
+        Collection<GameTestInfo> tests = runner.getTestInfos();
 
         testTracker = new MultipleTestTracker(tests);
         LOGGER.info("{} tests are now running!", testTracker.getTotalCount());
+        stopwatch.reset();
+        stopwatch.start();
+        runner.start();
     }
 
     private boolean haveTestsStarted() {

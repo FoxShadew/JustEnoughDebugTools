@@ -25,9 +25,12 @@ public class DebugClient implements ClientModInitializer {
 
     public static final MenuManagerImpl MENU_MANAGER = new MenuManagerImpl();
     public static final Menu ROOT_MENU = MENU_MANAGER.getMenu(Menu.ROOT);
+    public static final Menu WORLEDIT_MENU = MENU_MANAGER.getMenu(MenuManagerImpl.WORLEDIT);
 
     public static KeyMapping debugOptionsKey;
+    public static KeyMapping worldEditKey;
     public static boolean f6KeyDown = true;
+    public static boolean weKeyDown = true;
 
     public static ServerDebugStatusImpl serverDebugStatus;
 
@@ -50,13 +53,24 @@ public class DebugClient implements ClientModInitializer {
             debugOptionsKey = new KeyMapping("key.jedt.options", GLFW.GLFW_KEY_F6, "key.categories.misc")
         );
 
+        KeyBindingHelper.registerKeyBinding(
+            worldEditKey = new KeyMapping("key.jedt.worldedit", GLFW.GLFW_KEY_M, "key.categories.misc")
+        );
+
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             DebugConfigScreen.INSTANCE.receiveTick();
             if (debugOptionsKey.isDown() && !f6KeyDown) {
                 f6KeyDown = true;
-                DebugConfigScreen.show();
+                DebugConfigScreen.show(ROOT_MENU);
             } else if (!debugOptionsKey.isDown()) {
                 f6KeyDown = false;
+            }
+
+            if (worldEditKey.isDown() && !weKeyDown) {
+                weKeyDown = true;
+                DebugConfigScreen.show(WORLEDIT_MENU);
+            } else if (!debugOptionsKey.isDown()) {
+                weKeyDown = false;
             }
         });
 
@@ -64,7 +78,7 @@ public class DebugClient implements ClientModInitializer {
             Minecraft client = Minecraft.getInstance();
             int mx = (int) (client.mouseHandler.xpos() * (double) client.getWindow().getGuiScaledWidth() / client.getWindow().getWidth());
             int my = (int) (client.mouseHandler.ypos() * (double) client.getWindow().getGuiScaledHeight() / client.getWindow().getHeight());
-            DebugConfigScreen.INSTANCE.receiveRender(matrixStack, mx, my, tickDelta);
+            DebugConfigScreen.INSTANCE.receiveRender(matrixStack, mx, my, tickDelta.getGameTimeDeltaTicks());
         });
     }
 

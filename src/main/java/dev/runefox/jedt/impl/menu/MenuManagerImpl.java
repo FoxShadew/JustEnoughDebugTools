@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MenuManagerImpl implements MenuManager {
-    public static final ResourceLocation ROOT = new ResourceLocation("jedt:root");
+    public static final ResourceLocation ROOT = ResourceLocation.parse("jedt:root");
+    public static final ResourceLocation WORLEDIT = ResourceLocation.parse("jedt:worldedit");
 
     private final HashMap<ResourceLocation, MenuImpl> menuInstances = new HashMap<>();
 

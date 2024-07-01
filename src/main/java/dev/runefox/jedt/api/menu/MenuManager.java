@@ -25,7 +25,7 @@ public interface MenuManager {
      * @since 0.1
      */
     default Menu getMenu(String name) {
-        return getMenu(name == null ? null : new ResourceLocation(name));
+        return getMenu(name == null ? null : ResourceLocation.parse(name));
     }
 
     /**

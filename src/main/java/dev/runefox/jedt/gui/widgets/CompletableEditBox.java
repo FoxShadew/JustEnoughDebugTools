@@ -481,11 +481,11 @@ public class CompletableEditBox<T> extends EditBox {
         }
 
         @Override
-        public boolean mouseScrolled(double mouseX, double mouseY, double scroll) {
+        public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
             if (isActive()) {
-                if (scroll < -1) scroll = -1;
-                if (scroll > 1) scroll = 1;
-                int delta = (int) scroll;
+                if (scrollY < -1) scrollY = -1;
+                if (scrollY > 1) scrollY = 1;
+                int delta = (int) scrollY;
 
                 int diff = end - start;
                 int newStart = start - delta;

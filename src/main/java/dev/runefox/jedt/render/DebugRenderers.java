@@ -35,13 +35,12 @@ public class DebugRenderers {
 
         DebugRenderEvents.RENDER.invoker().render(pose, buffsrc, cameraX, cameraY, cameraZ);
 
-        RenderSystem.getModelViewStack().pushPose();
-        RenderSystem.getModelViewStack().last().pose().identity();
-        RenderSystem.getModelViewStack().last().normal().identity();
+        RenderSystem.getModelViewStack().pushMatrix();
+        RenderSystem.getModelViewStack().identity();
         RenderSystem.applyModelViewMatrix();
         buffsrc.endBatch(RenderType.lines());
         buffsrc.endBatch();
-        RenderSystem.getModelViewStack().popPose();
+        RenderSystem.getModelViewStack().popMatrix();
         RenderSystem.applyModelViewMatrix();
     }
 

@@ -7,8 +7,8 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 
-import java.io.File;
-import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DebugServer implements DedicatedServerModInitializer {
     @Override
@@ -29,13 +29,13 @@ public class DebugServer implements DedicatedServerModInitializer {
     }
 
     private static void reloadStatus(MinecraftServer server) {
-        File statusFile = server.getFile("debug_config.json");
-        if (!statusFile.exists()) {
+        Path statusFile = server.getFile("debug_config.json");
+        if (!Files.exists(statusFile)) {
             Debug.LOGGER.info("debug_config.json not found");
             Debug.serverDebugStatus.setDebugAvailable(false);
         } else {
             try {
-                Debug.serverDebugStatus.read(new JsonParser().parse(new FileReader(statusFile)).getAsJsonObject());
+                Debug.serverDebugStatus.read(JsonParser.parseReader(Files.newBufferedReader(statusFile)).getAsJsonObject());
                 Debug.LOGGER.info("Loaded debug_config.json");
             } catch (Exception exc) {
                 Debug.LOGGER.error("Failed to load debug_config.json", exc);

@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import dev.runefox.jedt.test.ProperJUnitLikeTestReporter;
 import dev.runefox.jedt.util.PathUtil;
 import net.minecraft.gametest.framework.LogTestReporter;
-import net.minecraft.gametest.framework.TeamcityTestReporter;
 import net.minecraft.gametest.framework.TestReporter;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,12 +15,10 @@ class TestReporterRegistry {
     static final Map<ResourceLocation, TestReporterType> REG = new HashMap<>();
 
     static {
-        REG.put(new ResourceLocation("jedt:log"), new Log());
-        REG.put(new ResourceLocation("jedt:junit"), new JUnit());
-        REG.put(new ResourceLocation("jedt:teamcity"), new Teamcity());
-        REG.put(new ResourceLocation("log"), new Log());
-        REG.put(new ResourceLocation("junit"), new JUnit());
-        REG.put(new ResourceLocation("teamcity"), new Teamcity());
+        REG.put(ResourceLocation.parse("jedt:log"), new Log());
+        REG.put(ResourceLocation.parse("jedt:junit"), new JUnit());
+        REG.put(ResourceLocation.parse("log"), new Log());
+        REG.put(ResourceLocation.parse("junit"), new JUnit());
     }
 
     private static class Log implements TestReporterType {
@@ -45,13 +42,6 @@ class TestReporterRegistry {
                 }
             }
             return new ProperJUnitLikeTestReporter(PathUtil.resolve(serverDir.toPath(), config.getAsString()).toFile());
-        }
-    }
-
-    private static class Teamcity implements TestReporterType {
-        @Override
-        public TestReporter setup(JsonElement config, File serverDir) {
-            return new TeamcityTestReporter();
         }
     }
 }

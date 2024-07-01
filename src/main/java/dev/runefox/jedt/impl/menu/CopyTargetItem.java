@@ -47,7 +47,7 @@ public class CopyTargetItem extends ActionItem {
                             });
                         } else {
                             BlockEntity be = client.level.getBlockEntity(pos);
-                            CompoundTag nbt = be != null ? be.saveWithId() : null;
+                            CompoundTag nbt = be != null ? be.saveWithId(client.level.registryAccess()) : null;
                             copyBlock(context, state, pos, nbt);
                             context.spawnResponse(Component.translatable("debug.options.jedt.copy_targeted.response_client_block"));
                         }

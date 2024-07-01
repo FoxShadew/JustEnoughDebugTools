@@ -13,25 +13,21 @@ import net.fabricmc.loader.impl.game.minecraft.Hooks;
 import net.minecraft.CrashReport;
 import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.SharedConstants;
-import net.minecraft.commands.Commands;
 import net.minecraft.gametest.framework.GameTestRegistry;
 import net.minecraft.gametest.framework.GlobalTestReporter;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.WorldLoader;
 import net.minecraft.server.dedicated.DedicatedServerSettings;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.FolderRepositorySource;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.ServerPacksSource;
-import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.level.DataPackConfig;
-import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelSummary;
+import net.minecraft.world.level.validation.DirectoryValidator;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -130,7 +126,7 @@ public class GameTestServerStarter {
             LevelStorageSource storageSrc = LevelStorageSource.createDefault(universe.toPath());
             LevelStorageSource.LevelStorageAccess storageAcc = storageSrc.createAccess(levelName);
 
-            LevelSummary summary = storageAcc.getSummary();
+            LevelSummary summary = storageAcc.getSummary(storageAcc.getDataTag());
             if (summary != null) {
                 if (summary.requiresManualConversion()) {
                     LOGGER.info("This world must be opened in an older version (like 1.6.4) to be safely converted");
@@ -168,16 +164,17 @@ public class GameTestServerStarter {
              */
             Optional<Path> dataPacksPath = rtConfig.datapacksPath(universe.toPath());
 
+            DirectoryValidator validator = storageAcc.parent().getWorldDirValidator();
             PackRepository packRepository = dataPacksPath.map(
                 path -> new PackRepository(
-                    new ServerPacksSource(),
-                    new FolderRepositorySource(path, PackType.SERVER_DATA, PackSource.SERVER),
-                    new FolderRepositorySource(storageAcc.getLevelPath(LevelResource.DATAPACK_DIR), PackType.SERVER_DATA, PackSource.WORLD)
+                    new ServerPacksSource(validator),
+                    new FolderRepositorySource(path, PackType.SERVER_DATA, PackSource.SERVER, validator),
+                    new FolderRepositorySource(storageAcc.getLevelPath(LevelResource.DATAPACK_DIR), PackType.SERVER_DATA, PackSource.WORLD, validator)
                 )
             ).orElseGet(
                 () -> new PackRepository(
-                    new ServerPacksSource(),
-                    new FolderRepositorySource(storageAcc.getLevelPath(LevelResource.DATAPACK_DIR), PackType.SERVER_DATA, PackSource.WORLD)
+                    new ServerPacksSource(validator),
+                    new FolderRepositorySource(storageAcc.getLevelPath(LevelResource.DATAPACK_DIR), PackType.SERVER_DATA, PackSource.WORLD, validator)
                 )
             );
 
@@ -232,21 +229,5 @@ public class GameTestServerStarter {
             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", exc);
             System.exit(1);
         }
-    }
-
-    private static WorldLoader.InitConfig loadOrCreateConfig(LevelStorageSource.LevelStorageAccess levelStorageAccess, boolean bl, PackRepository packRepository) {
-        WorldDataConfiguration worldDataConfiguration = levelStorageAccess.getDataConfiguration();
-        WorldDataConfiguration worldDataConfiguration2;
-        boolean bl2;
-        if (worldDataConfiguration != null) {
-            bl2 = false;
-            worldDataConfiguration2 = worldDataConfiguration;
-        } else {
-            bl2 = true;
-            worldDataConfiguration2 = new WorldDataConfiguration(DataPackConfig.DEFAULT, FeatureFlags.DEFAULT_FLAGS);
-        }
-
-        WorldLoader.PackConfig packConfig = new WorldLoader.PackConfig(packRepository, worldDataConfiguration2, bl, bl2);
-        return new WorldLoader.InitConfig(packConfig, Commands.CommandSelection.DEDICATED, 2);
     }
 }

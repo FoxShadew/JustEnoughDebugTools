@@ -88,7 +88,7 @@ public class TestQueryPopupScreen extends VerticallyStackedScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float tickProgress) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, tickProgress);
         super.render(graphics, mouseX, mouseY, tickProgress);
 
         graphics.drawCenteredString(font, getTitle(), width / 2, 20, 0xFFFFFFFF);
@@ -105,10 +105,10 @@ public class TestQueryPopupScreen extends VerticallyStackedScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double mx, double my, double delta) {
-        if (suggestionsLayer.isMouseOver(mx, my) && suggestionsLayer.mouseScrolled(mx, my, delta))
+    public boolean mouseScrolled(double mx, double my, double deltaX, double deltaY) {
+        if (suggestionsLayer.isMouseOver(mx, my) && suggestionsLayer.mouseScrolled(mx, my, deltaX, deltaY))
             return true;
-        return super.mouseScrolled(mx, my, delta);
+        return super.mouseScrolled(mx, my, deltaX, deltaY);
     }
 
     @Override

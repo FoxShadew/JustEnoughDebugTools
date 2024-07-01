@@ -56,8 +56,10 @@ public abstract class GameTestRegistryMixin {
             gameTest.timeoutTicks(),
             gameTest.setupTicks(),
             gameTest.required(),
-            gameTest.requiredSuccesses(),
+            gameTest.manualOnly(),
             gameTest.attempts(),
+            gameTest.requiredSuccesses(),
+            gameTest.skyAccess(),
             jedtTurnMethodIntoConsumer(method)
         );
     }

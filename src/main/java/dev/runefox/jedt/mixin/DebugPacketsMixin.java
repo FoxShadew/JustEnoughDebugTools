@@ -2,13 +2,13 @@ package dev.runefox.jedt.mixin;
 
 import dev.runefox.jedt.Debug;
 import dev.runefox.jedt.api.status.StandardStatusKeys;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.custom.NeighborUpdatesDebugPayload;
+import net.minecraft.network.protocol.common.custom.PathfindingDebugPayload;
 import net.minecraft.network.protocol.game.DebugPackets;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -49,12 +49,7 @@ public class DebugPacketsMixin {
             return;
         }
 
-        // Replicated write behaviour from ClientPlayNetworkHandler.onCustomPayload
-        FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(mob.getId());
-        buf.writeFloat(nodeReachProximity);
-        path.writeToStream(buf);
-        sendToAllWatching((ServerLevel) world, buf, ClientboundCustomPayloadPacket.DEBUG_PATHFINDING_PACKET, mob);
+        sendToAllWatching((ServerLevel) world, new PathfindingDebugPayload(mob.getId(), path, nodeReachProximity), mob);
     }
 
     /**
@@ -75,11 +70,7 @@ public class DebugPacketsMixin {
             return;
         }
 
-        // Replicated write behaviour from ClientPlayNetworkHandler.onCustomPayload
-        FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeVarLong(world.getGameTime());
-        buf.writeBlockPos(pos);
-        sendToAllWatching((ServerLevel) world, buf, ClientboundCustomPayloadPacket.DEBUG_NEIGHBORSUPDATE_PACKET, pos);
+        sendToAllWatching((ServerLevel) world, new NeighborUpdatesDebugPayload(world.getGameTime(), pos), pos);
     }
 
     /**
@@ -91,13 +82,13 @@ public class DebugPacketsMixin {
 
     }
 
-    private static void sendToAllWatching(ServerLevel world, FriendlyByteBuf buf, ResourceLocation channel, Entity watch) {
-        Packet<?> packet = new ClientboundCustomPayloadPacket(channel, buf);
+    private static void sendToAllWatching(ServerLevel world, CustomPacketPayload payload, Entity watch) {
+        Packet<?> packet = new ClientboundCustomPayloadPacket(payload);
         world.getLevel().getChunkSource().broadcast(watch, packet);
     }
 
-    private static void sendToAllWatching(ServerLevel world, FriendlyByteBuf buf, ResourceLocation channel, BlockPos watch) {
-        Packet<?> packet = new ClientboundCustomPayloadPacket(channel, buf);
+    private static void sendToAllWatching(ServerLevel world, CustomPacketPayload payload, BlockPos watch) {
+        Packet<?> packet = new ClientboundCustomPayloadPacket(payload);
         int cx = watch.getX() / 16;
         int cz = watch.getZ() / 16;
 

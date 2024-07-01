@@ -196,5 +196,15 @@
   "gui.jedt.test_query.batch": "Run Tests From Batch",
   "gui.jedt.test_query.export_function": "Export Test Structure As SNBT",
   "gui.jedt.test_query.import_function": "Import Test Structure From SNBT",
-  "gui.jedt.test_query.rotation_steps": "Rotation: %s"
+    "gui.jedt.test_query.rotation_steps": "Rotation: %s",
+
+
+    "debug.menu.jedt.worldedit": "WorldEdit",
+    "debug.menu.jedt.worldedit.copypaste": "Copy & Paste",
+    "debug.menu.jedt.worldedit.history": "History",
+    "debug.menu.jedt.worldedit.selection": "Selection",
+    "debug.menu.jedt.worldedit.moving": "Moving",
+    "debug.menu.jedt.worldedit.regions": "Regions",
+    "debug.menu.jedt.worldedit.shapes": "Shapes",
+    "debug.menu.jedt.worldedit.brushes": "Brushes"
 }

@@ -100,7 +100,7 @@ public class DebugGameTestRegistry {
 
     public static Optional<TestFunction> findTestFunction(String name) {
         return getAllTestFunctions().stream()
-                                    .filter(testFn -> testFn.getTestName().equalsIgnoreCase(name))
+                                    .filter(testFn -> testFn.testName().equalsIgnoreCase(name))
                                     .findFirst();
     }
 
@@ -140,8 +140,10 @@ public class DebugGameTestRegistry {
             testInfo.timeoutTicks(),
             testInfo.setupTicks(),
             testInfo.required(),
-            testInfo.requiredSuccesses(),
+            testInfo.manualOnly(),
             testInfo.attempts(),
+            testInfo.requiredSuccesses(),
+            testInfo.skyAccess(),
             turnMethodIntoConsumer(method)
         );
     }
@@ -163,7 +165,7 @@ public class DebugGameTestRegistry {
     }
 
     private static boolean isTestFunctionPartOfClass(TestFunction testFn, String className) {
-        return testFn.getTestName().toLowerCase().startsWith(className.toLowerCase() + ".");
+        return testFn.testName().toLowerCase().startsWith(className.toLowerCase() + ".");
     }
 
     public static Collection<TestFunction> getLastFailedTests() {

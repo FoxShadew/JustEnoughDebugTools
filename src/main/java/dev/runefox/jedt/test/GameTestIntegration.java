@@ -226,7 +226,7 @@ public class GameTestIntegration {
 
         if (str.startsWith("@")) {
             String batch = str.substring(1);
-            return fn -> fn.getBatchName().equalsIgnoreCase(batch) && theAlmightyFinalFilter.test(fn);
+            return fn -> fn.batchName().equalsIgnoreCase(batch) && theAlmightyFinalFilter.test(fn);
         } else if (str.contains(".")) {
             throw new RuntimeException("Cannot include/exclude from one single test");
         } else {
@@ -237,16 +237,16 @@ public class GameTestIntegration {
     private static Predicate<TestFunction> filter(String str) {
         if (str.startsWith("@")) {
             String batch = str.substring(1);
-            return fn -> fn.getBatchName().equalsIgnoreCase(batch);
+            return fn -> fn.batchName().equalsIgnoreCase(batch);
         } else if (str.contains(".")) {
-            return fn -> fn.getTestName().equalsIgnoreCase(str);
+            return fn -> fn.testName().equalsIgnoreCase(str);
         } else {
             return fn -> isTestFunctionPartOfClass(fn, str);
         }
     }
 
     private static boolean isTestFunctionPartOfClass(TestFunction fn, String cls) {
-        return fn.getTestName().toLowerCase().startsWith(cls.toLowerCase() + ".");
+        return fn.testName().toLowerCase().startsWith(cls.toLowerCase() + ".");
     }
 
 

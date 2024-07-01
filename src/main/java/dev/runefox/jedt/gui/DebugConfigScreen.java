@@ -22,6 +22,7 @@ import java.util.function.IntConsumer;
 
 public class DebugConfigScreen extends Screen {
     public static final DebugConfigScreen INSTANCE = new DebugConfigScreen();
+    private static Menu root;
 
     private final List<ConfigMenu> menus = new ArrayList<>();
     private final List<HoverText> hoverTexts = new ArrayList<>();
@@ -29,6 +30,11 @@ public class DebugConfigScreen extends Screen {
     private final DescriptionBox descriptionBox = new DescriptionBox();
 
     private boolean pauses;
+
+    private int hoverItem;
+    private int hoverMenu;
+    private int focusItem;
+    private int focusMenu;
 
     public DebugConfigScreen() {
         super(Component.translatable("jedt.options"));
@@ -40,7 +46,7 @@ public class DebugConfigScreen extends Screen {
         assert minecraft != null;
 
         if (!hasOpenMenus()) {
-            openMenu(DebugClient.ROOT_MENU, 0);
+            openMenu(root, 0);
 
             children().clear();
         }
@@ -57,6 +63,12 @@ public class DebugConfigScreen extends Screen {
         this.height = height;
         this.minecraft = minecraft;
         descriptionBox.resizeScreen(width, height);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        focusItem = -1;
+        focusMenu = -1;
     }
 
     private void openMenu(Menu menu, int index) {
@@ -159,10 +171,21 @@ public class DebugConfigScreen extends Screen {
         return menus.stream().mapToInt(menu -> menu.getDisplayableWidth(partialTicks)).sum();
     }
 
+    @Override
+    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+        // The menu renders before this screen renders, via 'receiveRender' below.
+        // If we call super, we call the blur effect which blurs our menu.
+    }
+
     public void receiveRender(GuiGraphics graphics, int mouseX, int mouseY, float tickProgress) {
-        assert minecraft != null;
+        // Since we did not call 'init' yet our 'minecraft' field is null. We need it.
+        minecraft = Minecraft.getInstance();
 
         RenderSystem.clear(GL32.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+
+        // Don't blur with no menus
+//        if (hasOpenMenus())
+//            renderBlurredBackground(tickProgress);
 
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, 110);
@@ -179,7 +202,8 @@ public class DebugConfigScreen extends Screen {
                 int w = menu.getDisplayableWidth(tickProgress);
                 menu.setHeight(height);
                 menu.setLeftOffset(leftOffset);
-                if (menu.render(graphics, mouseX, mouseY, tickProgress, descriptionBox)) {
+                int lightUp = menu.hoveredIndex(mouseX, mouseY);
+                if (menu.render(graphics, mouseX, mouseY, lightUp, tickProgress, descriptionBox)) {
                     clearDescriptionBox = false;
                 }
                 leftOffset += w;
@@ -253,6 +277,52 @@ public class DebugConfigScreen extends Screen {
         return false;
     }
 
+    private ConfigMenu menuOrNull(int index) {
+        if (index < 0 || index >= menus.size())
+            return null;
+
+        return menus.get(index);
+    }
+
+    private ConfigMenu prepKeyboardInteraction() {
+        ConfigMenu menu = menuOrNull(focusMenu);
+        if (menu == null) {
+            focusMenu = 0;
+            closeMenusFrom(1);
+            return menus.get(0);
+        }
+        return menu;
+    }
+
+    private void up() {
+//        ConfigMenu menu = prepKeyboardInteraction();
+//
+//        focusItem --;
+//        if (focusItem < 0)
+//            focusItem = menu.size() - 1;
+    }
+
+    private void down() {
+//        ConfigMenu menu = prepKeyboardInteraction();
+//
+//        focusItem ++;
+//        if (focusItem >= menu.size())
+//            focusItem = 0;
+    }
+
+    private void enter() {
+//        if (focusMenu >= 0 && focusItem > 0) {
+//            ConfigMenu menu = prepKeyboardInteraction();
+//            ConfigMenu.Entry entry = menu.entry(focusItem);
+//
+//            if (entry instanceof )
+//        }
+    }
+
+    private void left() {
+
+    }
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
@@ -266,6 +336,22 @@ public class DebugConfigScreen extends Screen {
             DebugClient.reloadMenus();
             openMenu(DebugClient.ROOT_MENU, 0);
             children().clear();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            enter();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
+            down();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            left();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_UP) {
+            up();
             return true;
         }
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
@@ -287,7 +373,14 @@ public class DebugConfigScreen extends Screen {
         }
     }
 
+
+
     public static void show() {
+        show(DebugClient.ROOT_MENU);
+    }
+
+    public static void show(Menu menu) {
+        root = menu;
         Minecraft.getInstance().setScreen(INSTANCE);
     }
 
