@@ -1,16 +1,17 @@
 package dev.runefox.jedt.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+
 import dev.runefox.jedt.DebugClient;
 import dev.runefox.jedt.api.render.DebugRenderEvents;
 import dev.runefox.jedt.api.render.DebugView;
 import dev.runefox.jedt.api.render.DebugViewManager;
 import dev.runefox.jedt.api.render.VanillaDebugView;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class DebugRenderers {
     public static final MutableBoolean PATHFINDING_ENABLED = new MutableBoolean(false);
@@ -35,13 +36,13 @@ public class DebugRenderers {
 
         DebugRenderEvents.RENDER.invoker().render(pose, buffsrc, cameraX, cameraY, cameraZ);
 
-        RenderSystem.getModelViewStack().pushMatrix();
-        RenderSystem.getModelViewStack().identity();
-        RenderSystem.applyModelViewMatrix();
+//        RenderSystem.getModelViewStack().pushMatrix();
+//        RenderSystem.getModelViewStack().identity();
+//        RenderSystem.applyModelViewMatrix();
         buffsrc.endBatch(RenderType.lines());
         buffsrc.endBatch();
-        RenderSystem.getModelViewStack().popMatrix();
-        RenderSystem.applyModelViewMatrix();
+//        RenderSystem.getModelViewStack().popMatrix();
+//        RenderSystem.applyModelViewMatrix();
     }
 
     private static <V extends DebugView> V register(V view) {
