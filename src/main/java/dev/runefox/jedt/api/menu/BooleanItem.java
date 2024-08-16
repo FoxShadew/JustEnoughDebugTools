@@ -3,11 +3,11 @@ package dev.runefox.jedt.api.menu;
 import net.minecraft.network.chat.Component;
 
 /**
- * An abstract toggleable option, of type {@link OptionType#BOOLEAN}. A boolean option is managed by two methods:
+ * An abstract toggleable option, of type {@link ItemType#BOOLEAN}. A boolean option is managed by two methods:
  * {@link #get} and {@link #toggle}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @see AbstractItem
  * @since 0.1
  */
@@ -19,13 +19,13 @@ public abstract class BooleanItem extends AbstractItem {
     /**
      * {@inheritDoc}
      *
-     * @return {@link OptionType#BOOLEAN}
+     * @return {@link ItemType#BOOLEAN}
      *
      * @since 0.1
      */
     @Override
-    public final OptionType getType() {
-        return OptionType.BOOLEAN;
+    public final ItemType getType() {
+        return ItemType.BOOLEAN;
     }
 
     /**

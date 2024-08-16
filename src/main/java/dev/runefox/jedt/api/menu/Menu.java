@@ -1,8 +1,9 @@
 package dev.runefox.jedt.api.menu;
 
-import dev.runefox.jedt.api.MenuInitializer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import dev.runefox.jedt.api.MenuInitializer;
 
 import java.util.stream.Stream;
 
@@ -11,7 +12,7 @@ import java.util.stream.Stream;
  *
  * @author Samū
  * @see MenuManager
- * @see Item
+ * @see MenuItem
  * @see MenuInitializer
  * @since 0.1
  */
@@ -87,19 +88,19 @@ public interface Menu {
     Component getHeader();
 
     /**
-     * Returns a stream of all the {@linkplain Item options} in this menu. Options can be added via {@link #addOption}.
+     * Returns a stream of all the {@linkplain MenuItem options} in this menu. Options can be added via {@link #addOption}.
      *
-     * @see #addOption(Item)
+     * @see #addOption(MenuItem)
      * @since 0.1
      */
-    Stream<Item> options();
+    Stream<MenuItem> options();
 
     /**
-     * Adds a {@link Item} to this menu.
+     * Adds a {@link MenuItem} to this menu.
      *
      * @param option The option to add to this menu. Must not be null.
      * @see #options()
      * @since 0.1
      */
-    void addOption(Item option);
+    void addOption(MenuItem option);
 }

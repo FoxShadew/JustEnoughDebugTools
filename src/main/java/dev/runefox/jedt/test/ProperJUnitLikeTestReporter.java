@@ -1,11 +1,16 @@
 package dev.runefox.jedt.test;
 
 import com.google.common.base.Stopwatch;
-import net.minecraft.gametest.framework.GameTestInfo;
-import net.minecraft.gametest.framework.TestReporter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import net.minecraft.gametest.framework.GameTestInfo;
+import net.minecraft.gametest.framework.TestReporter;
+
+import java.io.File;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -14,12 +19,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 
 // Works with GitHub Actions JUnit reporter action
+@Deprecated
 public class ProperJUnitLikeTestReporter implements TestReporter {
     private final Document document;
     private final Element testSuite;

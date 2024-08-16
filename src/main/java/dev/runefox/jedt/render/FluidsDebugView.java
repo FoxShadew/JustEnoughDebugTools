@@ -1,13 +1,14 @@
 package dev.runefox.jedt.render;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.runefox.jedt.api.render.DebugView;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -15,8 +16,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
+
+import dev.runefox.jedt.api.render.DebugView;
 
 @Environment(EnvType.CLIENT)
 public record FluidsDebugView(Minecraft client) implements DebugView {
@@ -54,7 +55,8 @@ public record FluidsDebugView(Minecraft client) implements DebugView {
 
             double height = pos.getY() + fheight;
 
-            LevelRenderer.renderLineBox(pose, buff, pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, height + 0.01, pos.getZ() + 1, 1, 1, 1, 1);
+
+            DebugRenderer.renderFilledBox(pose, buffSrc, pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, height + 0.01, pos.getZ() + 1, 1, 1, 1, 1);
 
             Vec3 flow = fluid.getFlow(world, pos);
             if (fheight < 0.4) {

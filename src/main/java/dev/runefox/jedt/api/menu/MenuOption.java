@@ -3,10 +3,10 @@ package dev.runefox.jedt.api.menu;
 import net.minecraft.network.chat.Component;
 
 /**
- * An option that opens a child menu, of type {@link OptionType#MENU}.
+ * An option that opens a child menu, of type {@link ItemType#MENU}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @see AbstractItem
  * @since 0.1
  */
@@ -32,8 +32,8 @@ public class MenuOption extends AbstractItem {
     }
 
     @Override
-    public final OptionType getType() {
-        return OptionType.MENU;
+    public final ItemType getType() {
+        return ItemType.MENU;
     }
 
     @Override

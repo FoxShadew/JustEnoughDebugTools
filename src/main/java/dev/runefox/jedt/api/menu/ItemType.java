@@ -1,14 +1,14 @@
 package dev.runefox.jedt.api.menu;
 
 /**
- * The types of debug menu options. This is returned by {@link Item#getType()} to determine the appearance and behavior
+ * The types of debug menu options. This is returned by {@link MenuItem#getType()} to determine the appearance and behavior
  * of the option.
  *
  * @author Samū
- * @see Item#getType()
+ * @see MenuItem#getType()
  * @since 0.1
  */
-public enum OptionType {
+public enum ItemType {
     /**
      * Type for a basic button option. This renders the option as a plain button.
      *

@@ -4,11 +4,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 /**
- * An abstract numeric option, of type {@link OptionType#NUMBER}. A numeric option is managed by two methods:
+ * An abstract numeric option, of type {@link ItemType#NUMBER}. A numeric option is managed by two methods:
  * {@link #get} and {@link #mutate}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @see AbstractItem
  * @since 0.1
  */
@@ -25,13 +25,13 @@ public abstract class NumberItem extends AbstractItem {
     /**
      * {@inheritDoc}
      *
-     * @return {@link OptionType#NUMBER}
+     * @return {@link ItemType#NUMBER}
      *
      * @since 0.1
      */
     @Override
-    public final OptionType getType() {
-        return OptionType.NUMBER;
+    public final ItemType getType() {
+        return ItemType.NUMBER;
     }
 
     /**

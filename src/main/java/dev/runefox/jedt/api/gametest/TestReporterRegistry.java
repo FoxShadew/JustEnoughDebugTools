@@ -1,16 +1,23 @@
 package dev.runefox.jedt.api.gametest;
 
 import com.google.gson.JsonElement;
-import dev.runefox.jedt.test.ProperJUnitLikeTestReporter;
-import dev.runefox.jedt.util.PathUtil;
+
 import net.minecraft.gametest.framework.LogTestReporter;
 import net.minecraft.gametest.framework.TestReporter;
 import net.minecraft.resources.ResourceLocation;
+
+import dev.runefox.jedt.test.ProperJUnitLikeTestReporter;
+import dev.runefox.jedt.util.PathUtil;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @deprecated Use Fabric's testing API.
+ */
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 class TestReporterRegistry {
     static final Map<ResourceLocation, TestReporterType> REG = new HashMap<>();
 

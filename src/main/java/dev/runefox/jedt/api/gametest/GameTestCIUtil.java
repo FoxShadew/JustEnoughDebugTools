@@ -1,10 +1,11 @@
 package dev.runefox.jedt.api.gametest;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.storage.LevelResource;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,9 +14,14 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * @deprecated Use Fabric's testing API.
+ */
+@Deprecated(forRemoval = true)
 public class GameTestCIUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    @Deprecated(forRemoval = true)
     public static void exportTestWorldAsZip(MinecraftServer server, File outputFile) {
         Path path = server.getWorldPath(LevelResource.ROOT).toAbsolutePath();
         outputFile.getAbsoluteFile().getParentFile().mkdirs();

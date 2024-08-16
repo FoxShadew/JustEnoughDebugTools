@@ -1,11 +1,13 @@
 package dev.runefox.jedt.util;
 
-import dev.runefox.jedt.DebugClient;
-import dev.runefox.jedt.api.status.DebugStatusEvents;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.GameRules;
+
+import dev.runefox.jedt.DebugClient;
+import dev.runefox.jedt.api.status.DebugStatusEvents;
 
 import java.util.HashMap;
 import java.util.Map;

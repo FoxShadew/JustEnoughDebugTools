@@ -3,32 +3,32 @@ package dev.runefox.jedt.api.menu;
 import net.minecraft.network.chat.Component;
 
 /**
- * An abstract clickable option, of type {@link OptionType#EXTERNAL}.
+ * An abstract clickable option, of type {@link ItemType#EXTERNAL}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @see AbstractItem
  * @since 0.2
  */
-public abstract class ExternalOption extends AbstractItem {
+public abstract class ExternalItem extends AbstractItem {
 
     /**
      * @param name The name to display on the option widget
      * @since 0.2
      */
-    public ExternalOption(Component name) {
+    public ExternalItem(Component name) {
         super(name);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return {@link OptionType#EXTERNAL}
+     * @return {@link ItemType#EXTERNAL}
      *
      * @since 0.2
      */
     @Override
-    public final OptionType getType() {
-        return OptionType.EXTERNAL;
+    public final ItemType getType() {
+        return ItemType.EXTERNAL;
     }
 }

@@ -1,8 +1,5 @@
 package dev.runefox.jedt.test;
 
-import com.mojang.logging.LogUtils;
-import dev.runefox.jedt.api.GameTestInitializer;
-import dev.runefox.jedt.util.PathUtil;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -10,6 +7,9 @@ import net.fabricmc.loader.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.fabricmc.loader.impl.game.minecraft.Hooks;
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
 import net.minecraft.CrashReport;
 import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.SharedConstants;
@@ -28,7 +28,9 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraft.world.level.validation.DirectoryValidator;
-import org.slf4j.Logger;
+
+import dev.runefox.jedt.api.GameTestInitializer;
+import dev.runefox.jedt.util.PathUtil;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -37,6 +39,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public class GameTestServerStarter {
     private static final Logger LOGGER = LogUtils.getLogger();
 

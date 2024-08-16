@@ -6,6 +6,7 @@ import net.minecraft.gametest.framework.TestReporter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class MultiTestReporter implements TestReporter {
     private final List<TestReporter> reporters = new ArrayList<>();
 

@@ -8,10 +8,11 @@ package dev.runefox.jedt.test;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Rotation;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,12 @@ import java.util.stream.Collectors;
 // exception if tests are not registered through the Fabric API ... sigh
 //
 // This is our own GameTestRegistry that Fabric can't see
+
+/**
+ * @deprecated A new more customizable testing system is planned for the future, for now the GameTest system from Mojang
+ * will do and Fabric's API for that is now in favour.
+ */
+@Deprecated
 public class DebugGameTestRegistry {
     private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.newArrayList();
     private static final Set<String> TEST_CLASS_NAMES = Sets.newHashSet();

@@ -5,11 +5,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
- * A context passed into {@link Item#onClick}. This can be used to obtain information about how the option was clicked,
+ * A context passed into {@link MenuItem#onClick}. This can be used to obtain information about how the option was clicked,
  * or to trigger certain responses such as opening a child menu.
  *
  * @author Samū
- * @see Item#onClick(OptionSelectContext)
+ * @see MenuItem#onClick(OptionSelectContext)
  * @since 0.1
  */
 public interface OptionSelectContext {
@@ -116,7 +116,7 @@ public interface OptionSelectContext {
     // Number option context
 
     /**
-     * Returns the amount of increment/decrement with which the value of a {@linkplain OptionType#NUMBER numeric option}
+     * Returns the amount of increment/decrement with which the value of a {@linkplain ItemType#NUMBER numeric option}
      * should be changed. When the option type is not numeric the returned value is 0.
      *
      * @since 0.1

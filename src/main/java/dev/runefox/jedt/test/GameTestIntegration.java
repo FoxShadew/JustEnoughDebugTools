@@ -4,11 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.runefox.jedt.Debug;
 import net.fabricmc.loader.api.ModContainer;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.gametest.framework.TestFunction;
 import net.minecraft.world.level.block.Rotation;
-import org.apache.logging.log4j.Logger;
+
+import dev.runefox.jedt.Debug;
 
 import java.io.Reader;
 import java.lang.reflect.Method;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+@Deprecated
 public class GameTestIntegration {
     private static final Logger LOGGER = Debug.LOGGER;
 

@@ -1,5 +1,7 @@
 package dev.runefox.jedt.gui.widgets;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -11,7 +13,6 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
 
 public class Label extends AbstractButton {
     public Label(int x, int y, int width, int height, Component text) {
@@ -30,7 +31,6 @@ public class Label extends AbstractButton {
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
 
-        graphics.setColor(1, 1, 1, 1);
         int colour = 0xFFFFFF;
         renderString(graphics, minecraft.font, colour | Mth.ceil(alpha * 255.0F) << 24);
     }

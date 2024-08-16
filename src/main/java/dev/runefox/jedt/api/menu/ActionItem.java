@@ -3,10 +3,10 @@ package dev.runefox.jedt.api.menu;
 import net.minecraft.network.chat.Component;
 
 /**
- * An abstract clickable option, of type {@link OptionType#ACTION}.
+ * An abstract clickable option, of type {@link ItemType#ACTION}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @see AbstractItem
  * @since 0.1
  */
@@ -23,12 +23,12 @@ public abstract class ActionItem extends AbstractItem {
     /**
      * {@inheritDoc}
      *
-     * @return {@link OptionType#ACTION}
+     * @return {@link ItemType#ACTION}
      *
      * @since 0.1
      */
     @Override
-    public final OptionType getType() {
-        return OptionType.ACTION;
+    public final ItemType getType() {
+        return ItemType.ACTION;
     }
 }

@@ -1,8 +1,9 @@
 package dev.runefox.jedt.impl.menu;
 
-import dev.runefox.jedt.api.menu.Item;
-import dev.runefox.jedt.api.menu.Menu;
 import net.minecraft.network.chat.Component;
+
+import dev.runefox.jedt.api.menu.Menu;
+import dev.runefox.jedt.api.menu.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.stream.Stream;
 
 public class MenuImpl implements Menu {
     private final Component header;
-    private final List<Item> options = new ArrayList<>();
+    private final List<MenuItem> options = new ArrayList<>();
 
     public MenuImpl(Component header) {
         this.header = header;
@@ -22,12 +23,12 @@ public class MenuImpl implements Menu {
     }
 
     @Override
-    public Stream<Item> options() {
+    public Stream<MenuItem> options() {
         return options.stream();
     }
 
     @Override
-    public void addOption(Item option) {
+    public void addOption(MenuItem option) {
         options.add(option);
     }
 

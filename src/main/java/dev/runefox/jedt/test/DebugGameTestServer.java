@@ -10,12 +10,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
-import dev.runefox.jedt.api.gametest.GameTestCIUtil;
-import dev.runefox.jedt.api.gametest.GameTestEvents;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportType;
 import net.minecraft.SystemReport;
@@ -49,9 +51,9 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
+
+import dev.runefox.jedt.api.gametest.GameTestCIUtil;
+import dev.runefox.jedt.api.gametest.GameTestEvents;
 
 import java.io.File;
 import java.net.Proxy;
@@ -65,6 +67,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Deprecated(forRemoval = true)
+@SuppressWarnings("removal")
 public class DebugGameTestServer extends MinecraftServer {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int PROGRESS_INTERVAL = 20;
@@ -127,8 +131,8 @@ public class DebugGameTestServer extends MinecraftServer {
 
                         // Create a superflat world
                         WorldDimensions.Complete dimensions = ctx.datapackWorldgen()
-                                                                 .registryOrThrow(Registries.WORLD_PRESET)
-                                                                 .getHolderOrThrow(WorldPresets.FLAT)
+                                                                 .lookupOrThrow(Registries.WORLD_PRESET)
+                                                                 .getOrThrow(WorldPresets.FLAT)
                                                                  .value()
                                                                  .createWorldDimensions()
                                                                  .bake(levelStems);

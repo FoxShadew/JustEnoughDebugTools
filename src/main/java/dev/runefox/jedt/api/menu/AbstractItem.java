@@ -1,22 +1,24 @@
 package dev.runefox.jedt.api.menu;
 
-import dev.runefox.jedt.api.status.DebugStatusKey;
-import dev.runefox.jedt.api.status.ServerDebugStatus;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.mutable.MutableBoolean;
+
+import dev.runefox.jedt.api.status.DebugStatusKey;
+import dev.runefox.jedt.api.status.ServerDebugStatus;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 /**
- * An abstract and configurable implementation of {@link Item}.
+ * An abstract and configurable implementation of {@link MenuItem}.
  *
  * @author Samū
- * @see Item
+ * @see MenuItem
  * @since 0.1
  */
-public abstract class AbstractItem implements Item {
+public abstract class AbstractItem implements MenuItem {
     private final Component name;
     private Component longName;
     private Component description;

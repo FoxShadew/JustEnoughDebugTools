@@ -1,7 +1,6 @@
 package dev.runefox.jedt.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.runefox.jedt.api.menu.Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,6 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
+import dev.runefox.jedt.api.menu.MenuItem;
+
 import java.util.List;
 
 public class DescriptionBox implements Renderable {
@@ -17,7 +18,7 @@ public class DescriptionBox implements Renderable {
     private static final int MARGIN = 5;
     private static final int LINE_HEIGHT = 10;
 
-    private Item hovered;
+    private MenuItem hovered;
     private long hoverTimeStart;
     private boolean visible = false;
     private int x;
@@ -74,7 +75,7 @@ public class DescriptionBox implements Renderable {
             update(hoverX, hoverY, hoverW, hoverH, w, h, header, desc);
     }
 
-    public void updateHovered(Item hovered, int hoverX, int hoverY, int hoverW, int hoverH, int scrW, int scrH) {
+    public void updateHovered(MenuItem hovered, int hoverX, int hoverY, int hoverW, int hoverH, int scrW, int scrH) {
         if (hovered != this.hovered) {
             this.visible = false;
             this.hoverTimeStart = System.currentTimeMillis();

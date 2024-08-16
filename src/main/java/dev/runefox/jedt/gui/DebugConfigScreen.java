@@ -1,20 +1,22 @@
 package dev.runefox.jedt.gui;
 
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL32;
+
 import com.mojang.blaze3d.platform.ClipboardManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.runefox.jedt.DebugClient;
-import dev.runefox.jedt.api.menu.Item;
-import dev.runefox.jedt.api.menu.Menu;
-import dev.runefox.jedt.api.menu.OptionSelectContext;
-import dev.runefox.jedt.api.menu.OptionType;
-import dev.runefox.jedt.mixin.ScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL32;
+
+import dev.runefox.jedt.DebugClient;
+import dev.runefox.jedt.api.menu.ItemType;
+import dev.runefox.jedt.api.menu.Menu;
+import dev.runefox.jedt.api.menu.MenuItem;
+import dev.runefox.jedt.api.menu.OptionSelectContext;
+import dev.runefox.jedt.mixin.ScreenAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,14 +76,14 @@ public class DebugConfigScreen extends Screen {
     private void openMenu(Menu menu, int index) {
         ConfigMenu configMenu = new ConfigMenu(menu.getHeader());
         menu.options()
-            .filter(Item::isVisible)
+            .filter(MenuItem::isVisible)
             .map(opt -> entryFromOption(opt, index))
             .forEach(configMenu::addEntry);
         openMenu(configMenu, index);
     }
 
-    private ConfigMenu.Entry entryFromOption(Item option, int index) {
-        OptionType type = option.getType();
+    private ConfigMenu.Entry entryFromOption(MenuItem option, int index) {
+        ItemType type = option.getType();
         IntConsumer handler = incr -> {
             SelectionContext context = new SelectionContext(incr, index + 1);
             option.onClick(context);
@@ -181,7 +183,7 @@ public class DebugConfigScreen extends Screen {
         // Since we did not call 'init' yet our 'minecraft' field is null. We need it.
         minecraft = Minecraft.getInstance();
 
-        RenderSystem.clear(GL32.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+        RenderSystem.clear(GL32.GL_DEPTH_BUFFER_BIT);
 
         // Don't blur with no menus
 //        if (hasOpenMenus())

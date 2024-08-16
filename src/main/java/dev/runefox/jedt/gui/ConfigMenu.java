@@ -1,19 +1,22 @@
 package dev.runefox.jedt.gui;
 
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.runefox.jedt.api.menu.Item;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
+
+import dev.runefox.jedt.api.menu.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -365,7 +368,21 @@ public class ConfigMenu implements GuiEventListener {
             int h = height;
 
             while (h > 0) {
-                graphics.blit(TEXTURE, left, height - h, MENU_WIDTH - width, 0, width, Math.min(height, h));
+                graphics.blit(
+                    RenderType::guiTextured,
+                    TEXTURE,
+                    // screen coords
+                    left, height - h,
+
+                    // texture coords
+                    MENU_WIDTH - width, 0,
+
+                    // sprite size
+                    0, width,
+
+                    // texture size
+                    256, 256
+                );
                 h -= height;
             }
         }
@@ -396,9 +413,9 @@ public class ConfigMenu implements GuiEventListener {
                     if (interactive && !hoveringScrollbar && index == lightUpIndex) {
                         box.updateHovered(entry.option, x1, y1, x2 - x1, y2 - y1, DebugConfigScreen.INSTANCE.width, DebugConfigScreen.INSTANCE.height);
                         hasDescriptionBox = true;
-                        graphics.blit(TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (3 + entry.type() * 2) + uOffset, width, visibleHeight);
+                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (3 + entry.type() * 2) + uOffset, width, visibleHeight, 256, 256);
                     } else {
-                        graphics.blit(TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (2 + entry.type() * 2) + uOffset, width, visibleHeight);
+                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (2 + entry.type() * 2) + uOffset, width, visibleHeight, 256, 256);
                     }
                     RenderSystem.setShaderColor(1, 1, 1, 1);
 
@@ -430,7 +447,7 @@ public class ConfigMenu implements GuiEventListener {
         graphics.pose().translate(0, 0, 10);
 
         if (widthf > 0) {
-            graphics.blit(TEXTURE, left, 0, 2 * MENU_WIDTH - width, 0, width, ITEM_HEIGHT);
+            graphics.blit(RenderType::guiTextured, TEXTURE, left, 0, 2 * MENU_WIDTH - width, 0, width, ITEM_HEIGHT, 256, 256);
 
             int cbWidth = Math.min(ITEM_HEIGHT, width);
 
@@ -440,7 +457,7 @@ public class ConfigMenu implements GuiEventListener {
             int y2 = ITEM_HEIGHT;
 
             if (interactive && mouseX >= x1 && mouseX < x2 && mouseY >= y1 && mouseY < y2) {
-                graphics.blit(TEXTURE, x1, 0, 2 * MENU_WIDTH - cbWidth, ITEM_HEIGHT, cbWidth, ITEM_HEIGHT);
+                graphics.blit(RenderType::guiTextured, TEXTURE, x1, 0, 2 * MENU_WIDTH - cbWidth, ITEM_HEIGHT, cbWidth, ITEM_HEIGHT, 256, 256);
             }
         }
 
@@ -455,29 +472,29 @@ public class ConfigMenu implements GuiEventListener {
 
     public static class Entry implements Comparable<Entry> {
         private Component text;
-        private Item option;
+        private MenuItem option;
         private final int textColor;
         private final Runnable clickHandler;
         protected Supplier<Component> extraInfo = () -> null;
         protected int type;
 
-        public Entry(Item option, Component text, Runnable clickHandler, int textColor) {
+        public Entry(MenuItem option, Component text, Runnable clickHandler, int textColor) {
             this.option = option;
             this.text = text;
             this.clickHandler = clickHandler;
             this.textColor = textColor == -1 ? FOREGROUND : textColor & 0xFFFFFF;
         }
 
-        public Entry(Item option, Component text, Runnable clickHandler) {
+        public Entry(MenuItem option, Component text, Runnable clickHandler) {
             this(option, text, clickHandler, FOREGROUND);
         }
 
-        public Entry(Item option, Component text, Runnable clickHandler, Supplier<Component> extraInfo) {
+        public Entry(MenuItem option, Component text, Runnable clickHandler, Supplier<Component> extraInfo) {
             this(option, text, clickHandler, FOREGROUND);
             this.extraInfo = extraInfo;
         }
 
-        public Entry(Item option, Component text, Runnable clickHandler, Supplier<Component> extraInfo, int type) {
+        public Entry(MenuItem option, Component text, Runnable clickHandler, Supplier<Component> extraInfo, int type) {
             this(option, text, clickHandler, extraInfo);
             this.type = type;
         }
@@ -512,15 +529,15 @@ public class ConfigMenu implements GuiEventListener {
     }
 
     public static class MenuEntry extends Entry {
-        public MenuEntry(Item option, Component text, Runnable clickHandler, int textColor) {
+        public MenuEntry(MenuItem option, Component text, Runnable clickHandler, int textColor) {
             super(option, text, clickHandler, textColor);
         }
 
-        public MenuEntry(Item option, Component text, Runnable clickHandler) {
+        public MenuEntry(MenuItem option, Component text, Runnable clickHandler) {
             super(option, text, clickHandler);
         }
 
-        public MenuEntry(Item option, Component text, Runnable clickHandler, Supplier<Component> extraInfo) {
+        public MenuEntry(MenuItem option, Component text, Runnable clickHandler, Supplier<Component> extraInfo) {
             super(option, text, clickHandler);
             this.extraInfo = extraInfo;
         }
@@ -542,17 +559,17 @@ public class ConfigMenu implements GuiEventListener {
     public static class CheckableEntry extends Entry {
         private final BooleanSupplier hasCheck;
 
-        public CheckableEntry(Item option, Component text, Runnable clickHandler, BooleanSupplier hasCheck, int textColor) {
+        public CheckableEntry(MenuItem option, Component text, Runnable clickHandler, BooleanSupplier hasCheck, int textColor) {
             super(option, text, clickHandler, textColor);
             this.hasCheck = hasCheck;
         }
 
-        public CheckableEntry(Item option, Component text, Runnable clickHandler, BooleanSupplier hasCheck) {
+        public CheckableEntry(MenuItem option, Component text, Runnable clickHandler, BooleanSupplier hasCheck) {
             super(option, text, clickHandler);
             this.hasCheck = hasCheck;
         }
 
-        public CheckableEntry(Item option, Component text, Runnable clickHandler, BooleanSupplier hasCheck, Supplier<Component> extraInfo) {
+        public CheckableEntry(MenuItem option, Component text, Runnable clickHandler, BooleanSupplier hasCheck, Supplier<Component> extraInfo) {
             super(option, text, clickHandler);
             this.hasCheck = hasCheck;
             this.extraInfo = extraInfo;
@@ -568,28 +585,28 @@ public class ConfigMenu implements GuiEventListener {
         private final Runnable upperClickHandler;
         private final Runnable lowerClickHandler;
 
-        public SpinnerEntry(Item option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, IntSupplier value, int textColor) {
+        public SpinnerEntry(MenuItem option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, IntSupplier value, int textColor) {
             super(option, text, clickHandler, textColor);
             this.extraInfo = () -> Component.literal(value.getAsInt() + "");
             this.upperClickHandler = upperClickHandler;
             this.lowerClickHandler = lowerClickHandler;
         }
 
-        public SpinnerEntry(Item option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, IntSupplier value) {
+        public SpinnerEntry(MenuItem option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, IntSupplier value) {
             super(option, text, clickHandler);
             this.extraInfo = () -> Component.literal(value.getAsInt() + "");
             this.upperClickHandler = upperClickHandler;
             this.lowerClickHandler = lowerClickHandler;
         }
 
-        public SpinnerEntry(Item option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, Supplier<Component> value, int textColor) {
+        public SpinnerEntry(MenuItem option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, Supplier<Component> value, int textColor) {
             super(option, text, clickHandler, textColor);
             this.extraInfo = value;
             this.upperClickHandler = upperClickHandler;
             this.lowerClickHandler = lowerClickHandler;
         }
 
-        public SpinnerEntry(Item option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, Supplier<Component> value) {
+        public SpinnerEntry(MenuItem option, Component text, Runnable clickHandler, Runnable upperClickHandler, Runnable lowerClickHandler, Supplier<Component> value) {
             super(option, text, clickHandler);
             this.extraInfo = value;
             this.upperClickHandler = upperClickHandler;

@@ -1,6 +1,0 @@
-{
-  "_runtime": ["#tests"],
-  "tests": [
-    "dev.runefox.jedt.tests.DebugTests"
-  ]
-}

@@ -1,10 +1,12 @@
 package dev.runefox.jedt.test;
 
-import dev.runefox.jedt.api.gametest.GameTestEvents;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.gametest.framework.GameTestListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 
+import dev.runefox.jedt.api.gametest.GameTestEvents;
+
+@Deprecated
 public class TestEventsListener implements GameTestListener {
     public static final TestEventsListener INSTANCE = new TestEventsListener();
 

@@ -17,7 +17,7 @@ import net.minecraft.network.chat.Component;
  * @see MenuOption
  * @since 0.1
  */
-public interface Item {
+public interface MenuItem {
 
     /**
      * Returns the component to display on the widget of this debug option. Must not return null.
@@ -37,12 +37,12 @@ public interface Item {
     }
 
     /**
-     * Returns the type of this option. See {@link OptionType} for a set of valid option types. This determines the
+     * Returns the type of this option. See {@link ItemType} for a set of valid option types. This determines the
      * appearance of the option in the menu. Must not return null.
      *
      * @since 0.1
      */
-    OptionType getType();
+    ItemType getType();
 
     /**
      * Triggered as soon as the option is clicked in the debug menu. The given {@link OptionSelectContext} instance
@@ -62,7 +62,7 @@ public interface Item {
     }
 
     /**
-     * Used when the option type returned by {@link #getType} is {@link OptionType#BOOLEAN} to determine whether the
+     * Used when the option type returned by {@link #getType} is {@link ItemType#BOOLEAN} to determine whether the
      * option is checked. It is important that the option itself does not manage the checked state, this should read the
      * state from an external container, or return true or false constantly.
      *

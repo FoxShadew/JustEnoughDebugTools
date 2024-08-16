@@ -2,8 +2,7 @@ package dev.runefox.jedt.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.runefox.jedt.api.gametest.TestReporterType;
-import dev.runefox.jedt.util.PathUtil;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestRegistry;
 import net.minecraft.gametest.framework.LogTestReporter;
@@ -12,6 +11,9 @@ import net.minecraft.gametest.framework.TestReporter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Rotation;
 
+import dev.runefox.jedt.api.gametest.TestReporterType;
+import dev.runefox.jedt.util.PathUtil;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+@Deprecated
 public class RuntimeTestConfig {
     private final Set<String> sets = new HashSet<>();
     private final Set<String> mods = new HashSet<>();

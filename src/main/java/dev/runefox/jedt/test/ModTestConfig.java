@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+@Deprecated
 public class ModTestConfig {
     private static final Logger LOGGER = LogManager.getLogger();
 
