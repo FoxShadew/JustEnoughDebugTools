@@ -59,14 +59,8 @@ if (project.hasProperty("rfxMavenUser") && project.hasProperty("rfxMavenPass")) 
     publishing {
         publications {
             create<MavenPublication>("mavenJava") {
-                artifact("remapJar") {
-                    builtBy(tasks.remapJar)
-                    artifactId = "jedt"
-                }
-                artifact("sourcesJar") {
-                    builtBy(tasks.remapSourcesJar)
-                    artifactId = "jedt"
-                }
+                artifactId = "jedt"
+                from(components["java"])
             }
         }
 
