@@ -1,5 +1,6 @@
 package dev.runefox.jedt.api.menu;
 
+import dev.runefox.jedt.util.GameRuleAccessHook;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -39,8 +40,8 @@ public class BooleanGameruleItem extends BooleanItem {
     protected void toggle(OptionSelectContext context) {
         if (!context.hasPermissionLevel(2)) {
             context.spawnResponse(
-                Component.translatable("debug.options.jedt.commands.no_permission")
-                         .withStyle(ChatFormatting.RED)
+                    Component.translatable("debug.options.jedt.commands.no_permission")
+                            .withStyle(ChatFormatting.RED)
             );
             return;
         }
@@ -53,7 +54,7 @@ public class BooleanGameruleItem extends BooleanItem {
 
         // Temporarily set the gamerule on the client - the server is gonna send an update but we want smooth toggling
         // so we don't wait for the server (if we do wait the button might be pressed twice without toggling)
-        client.level.getGameRules().getRule(key).set(newVal, null);
+        ((GameRuleAccessHook) client.level).jedt$getGameRules().getRule(key).set(newVal, null);
 
         if (response != null) {
             context.spawnResponse(response);
@@ -64,6 +65,6 @@ public class BooleanGameruleItem extends BooleanItem {
     protected boolean get() {
         Minecraft client = Minecraft.getInstance();
         assert client.level != null;
-        return client.level.getGameRules().getBoolean(key);
+        return ((GameRuleAccessHook) client.level).jedt$getGameRules().getBoolean(key);
     }
 }

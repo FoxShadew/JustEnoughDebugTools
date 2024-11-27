@@ -14,13 +14,16 @@
     "PathMixin",
     "PlayerManagerMixin",
     "ReportGameListenerMixin",
+    "ServerLevelMixin",
     "ServerMainMixin",
     "StructureUtilsMixin"
   ],
   "client": [
+    "ClientLevelMixin",
     "DebugRendererAccessor",
     "DebugRendererMixin",
     "EditBoxAccessor",
+    "NeighborsUpdateRendererMixin",
     "PathfindingDebugRendererMixin",
     "ScreenAccessor"
   ],

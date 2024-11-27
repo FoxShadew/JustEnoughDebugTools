@@ -120,6 +120,7 @@ public class DefaultMenuInitializer implements MenuInitializer {
         display.addOption(new dev.runefox.jedt.impl.menu.Item(text("heightmaps"), DebugRenderers.HEIGHTMAPS_SHOWN).desc(desc("heightmaps")));
         display.addOption(new dev.runefox.jedt.impl.menu.Item(text("fluid_levels"), DebugRenderers.FLUID_LEVELS_SHOWN).desc(desc("fluid_levels")));
         display.addOption(new Item(text("collisions"), DebugRenderers.COLLISIONS_SHOWN).desc(desc("collisions")));
+        display.addOption(new Item(text("brains"), DebugRenderers.BRAINS_SHOWN).desc(desc("brains")));
 
         BooleanSupplier gametestEnabled = () -> DebugClient.serverDebugStatus.getStatus(StandardStatusKeys.ALLOW_GAMETEST);
         gametest.addOption(new CommandItem(text("gametest.runthis"), "test runthis").closeScreenOnClick().onlyIf(gametestEnabled).desc(desc("gametest.runthis")));

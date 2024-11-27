@@ -7,6 +7,7 @@ import dev.runefox.jedt.api.render.DebugView;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -203,7 +204,7 @@ public class PathfinderDebugView implements DebugView {
 
     public static void renderPathLine(Path path, double camX, double camY, double camZ) {
         RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(CoreShaders.POSITION_COLOR);
 
         Tesselator tess = Tesselator.getInstance();
         BufferBuilder buff = tess.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);

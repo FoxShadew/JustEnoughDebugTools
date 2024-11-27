@@ -67,6 +67,8 @@
   "debug.options.jedt.neighbor_updates.desc": "Toggles the rendering of neighbor updates.",
   "debug.options.jedt.collisions": "Collision Shapes",
   "debug.options.jedt.collisions.desc": "Toggles the rendering of block collision hitboxes.",
+  "debug.options.jedt.brains": "Brains & POIs",
+  "debug.options.jedt.brains.desc": "Toggles the rendering of brain information for mobs that have brains, which also includes points of interest.",
   "debug.options.jedt.fluid_levels": "Fluid Levels",
   "debug.options.jedt.fluid_levels.desc": "Toggles the rendering of fluid levels and flow directions.",
   "debug.options.jedt.pause_unfocus": "Pause If Focus Lost",

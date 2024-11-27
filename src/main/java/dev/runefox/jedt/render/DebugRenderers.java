@@ -1,5 +1,6 @@
 package dev.runefox.jedt.render;
 
+import net.minecraft.client.renderer.culling.Frustum;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,22 +20,24 @@ public class DebugRenderers {
     public static final MutableBoolean HEIGHTMAPS_SHOWN = new MutableBoolean(false);
     public static final MutableBoolean FLUID_LEVELS_SHOWN = new MutableBoolean(false);
     public static final MutableBoolean COLLISIONS_SHOWN = new MutableBoolean(false);
+    public static final MutableBoolean BRAINS_SHOWN = new MutableBoolean(false);
 
     public static final PathfinderDebugView PATHFINDING = register(new PathfinderDebugView(PATHFINDING_ENABLED));
     public static final DebugView NEIGHBOR_UPDATES = register(new VanillaDebugView(r -> r.neighborsUpdateRenderer, NEIGHBOR_UPDATES_SHOWN::booleanValue));
     public static final DebugView HEIGHTMAPS = register(new VanillaDebugView(r -> r.heightMapRenderer, HEIGHTMAPS_SHOWN::booleanValue));
     public static final DebugView FLUID_LEVELS = register(new FluidsDebugView(Minecraft.getInstance()));
     public static final DebugView COLLISIONS = register(new VanillaDebugView(r -> r.collisionBoxRenderer, COLLISIONS_SHOWN::booleanValue));
+    public static final DebugView BRAINS = register(new VanillaDebugView(r -> r.brainDebugRenderer, BRAINS_SHOWN::booleanValue));
 
     public static void clear() {
         DebugRenderEvents.CLEAR.invoker().clear();
     }
 
-    public static void render(PoseStack pose, MultiBufferSource.BufferSource buffSource, double cameraX, double cameraY, double cameraZ) {
+    public static void render(PoseStack pose, Frustum frustum, MultiBufferSource.BufferSource buffSource, double cameraX, double cameraY, double cameraZ) {
 
         MultiBufferSource.BufferSource buffsrc = DebugClient.BUFFERS.getBufferSource();
 
-        DebugRenderEvents.RENDER.invoker().render(pose, buffsrc, cameraX, cameraY, cameraZ);
+        DebugRenderEvents.RENDER.invoker().render(pose, frustum, buffsrc, cameraX, cameraY, cameraZ);
 
 //        RenderSystem.getModelViewStack().pushMatrix();
 //        RenderSystem.getModelViewStack().identity();

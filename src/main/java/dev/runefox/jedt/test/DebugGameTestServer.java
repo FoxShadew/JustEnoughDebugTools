@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
+import net.minecraft.world.flag.FeatureFlagSet;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -75,7 +76,7 @@ public class DebugGameTestServer extends MinecraftServer {
 
     private static final Services TEST_SERVICES = new Services(null, ServicesKeySet.EMPTY, null, null);
 
-    private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(), rules -> {
+    private static final GameRules TEST_GAME_RULES = Util.make(new GameRules(FeatureFlagSet.of()), rules -> {
         rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, null);
         rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, null);
     });

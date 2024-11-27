@@ -46,7 +46,7 @@ public class DebugNetwork implements ModInitializer {
         FriendlyByteBuf rulesBuf = PacketByteBufs.create();
 
         GameRules rules = server.getGameRules();
-        GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
+        rules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
             @Override
             public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
                 count.increment();

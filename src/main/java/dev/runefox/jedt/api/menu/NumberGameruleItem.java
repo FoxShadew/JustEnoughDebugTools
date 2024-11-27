@@ -1,5 +1,6 @@
 package dev.runefox.jedt.api.menu;
 
+import dev.runefox.jedt.util.GameRuleAccessHook;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -39,7 +40,7 @@ public class NumberGameruleItem extends NumberItem {
     protected int get() {
         Minecraft client = Minecraft.getInstance();
         assert client.level != null;
-        return client.level.getGameRules().getInt(key);
+        return ((GameRuleAccessHook) client.level).jedt$getGameRules().getInt(key);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class NumberGameruleItem extends NumberItem {
 
         // Temporarily set the gamerule on the client - the server is gonna send an update but we want smooth switching
         // so we don't wait for the server (if we do wait the button might be changed twice without updating)
-        client.level.getGameRules().getRule(key).set(newVal, null);
+        ((GameRuleAccessHook) client.level).jedt$getGameRules().getRule(key).set(newVal, null);
 
         if (response != null) {
             context.spawnResponse(response);

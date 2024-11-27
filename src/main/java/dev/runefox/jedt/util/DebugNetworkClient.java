@@ -34,8 +34,8 @@ public class DebugNetworkClient implements ClientModInitializer {
                         return;
                     }
 
-                    GameRules gameRules = client.level.getGameRules();
-                    GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
+                    GameRules gameRules = ((GameRuleAccessHook) client.level).jedt$getGameRules();
+                    gameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
                         @Override
                         public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
                             String name = key.getId();

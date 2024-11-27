@@ -35,8 +35,10 @@ public class ConfigMenu implements GuiEventListener {
     private static final int HOVERING_SCROLL_BAR_WIDTH = 4;
 
     private final Component title;
-    private Runnable closeHandler = () -> { };
-    private Runnable hoverChangeHandler = () -> { };
+    private Runnable closeHandler = () -> {
+    };
+    private Runnable hoverChangeHandler = () -> {
+    };
 
     private final List<Entry> entries = new ArrayList<>();
     private final Font textRenderer = Minecraft.getInstance().font;
@@ -195,8 +197,8 @@ public class ConfigMenu implements GuiEventListener {
 
     private void playClickSound(float pitch) {
         Minecraft.getInstance()
-                 .getSoundManager()
-                 .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, pitch));
+                .getSoundManager()
+                .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, pitch));
     }
 
     @Override
@@ -363,27 +365,36 @@ public class ConfigMenu implements GuiEventListener {
 
         int width = (int) (MENU_WIDTH * widthf);
         int alphaFactor = (int) (itemOpacity * 255) << 24;
+        int sbAlphaFactor = (int) ((itemOpacity * 0.35) * 255) << 24;
 
         if (widthf > 0) {
             int h = height;
 
             while (h > 0) {
+                RenderSystem.setShaderColor(1, 1, 1, 1);
                 graphics.blit(
-                    RenderType::guiTextured,
-                    TEXTURE,
-                    // screen coords
-                    left, height - h,
+                        RenderType::guiTextured,
+                        TEXTURE,
+                        // screen coords
+                        left, height - h,
 
-                    // texture coords
-                    MENU_WIDTH - width, 0,
+                        // texture coords
+                        MENU_WIDTH - width, 0,
 
-                    // sprite size
-                    0, width,
+                        // sprite size
+                        width, height,
 
-                    // texture size
-                    256, 256
+                        // uv size
+                        width, height,
+
+                        // texture size
+                        256, 256,
+
+                        // colour
+                        0xFFFFFFFF
                 );
-                h -= height;
+
+                h -= height; // Samu what the fuck?    -- Samu
             }
         }
 
@@ -399,6 +410,7 @@ public class ConfigMenu implements GuiEventListener {
                 int x2 = left + width;
                 int y2 = y + ITEM_HEIGHT;
                 int tc = entry.textColor | alphaFactor;
+                int uc = 0xFFFFFF | alphaFactor;
 
                 RenderSystem.enableBlend();
 
@@ -406,18 +418,16 @@ public class ConfigMenu implements GuiEventListener {
                 int visibleHeight = Math.min(ITEM_HEIGHT, bottomY - ITEM_HEIGHT / 2);
 
                 if (visibleHeight > 0 && (y >= 0 || y <= height)) {
-                    RenderSystem.setShaderColor(1, 1, 1, itemOpacity);
                     int uOffset = ITEM_HEIGHT - visibleHeight;
                     int topY = bottomY - visibleHeight;
 
                     if (interactive && !hoveringScrollbar && index == lightUpIndex) {
                         box.updateHovered(entry.option, x1, y1, x2 - x1, y2 - y1, DebugConfigScreen.INSTANCE.width, DebugConfigScreen.INSTANCE.height);
                         hasDescriptionBox = true;
-                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (3 + entry.type() * 2) + uOffset, width, visibleHeight, 256, 256);
+                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (3 + entry.type() * 2) + uOffset, width, visibleHeight, width, visibleHeight, 256, 256, uc);
                     } else {
-                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (2 + entry.type() * 2) + uOffset, width, visibleHeight, 256, 256);
+                        graphics.blit(RenderType::guiTextured, TEXTURE, left, topY, MENU_WIDTH, ITEM_HEIGHT * (2 + entry.type() * 2) + uOffset, width, visibleHeight, width, visibleHeight, 256, 256, uc);
                     }
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
 
                     RenderSystem.enableBlend();
                     graphics.drawString(textRenderer, entry.text, SIDE_PADDING + left, TOP_PADDING + y, tc, true);
@@ -439,7 +449,7 @@ public class ConfigMenu implements GuiEventListener {
                 int sy1 = ITEM_HEIGHT + scrollbarOffset;
                 int sy2 = sy1 + scrollbarLength;
 
-                graphics.fill(sx1, sy1, sx2, sy2, 0x55FFFFFF);
+                graphics.fill(sx1, sy1, sx2, sy2, 0xFFFFFF | sbAlphaFactor);
             }
         }
 
